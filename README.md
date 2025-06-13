@@ -1,6 +1,6 @@
 # HiForestProducerTool
 
-This repository hosts a collection of simple examples that use CMSSW EDAnalyzers to extract Trigger information and produce a ROOT file called **HiForest** from the CMS public heavy-ion data collected in 2010. Here you will find instructions on how to run these codes and reproduce the analysis of the dimuon spectrum.
+This repository hosts a collection of simple examples that use CMSSW EDAnalyzers to extract Trigger information and produce a ROOT file from the CMS public heavy-ion data collected in 2010. Here you will find instructions on how to run these codes and reproduce the analysis of the dimuon spectrum.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10606131.svg)](https://doi.org/10.5281/zenodo.10606131)
 
@@ -42,17 +42,14 @@ To run the configuration:
   ```
 
 
-This configuration reads input ROOT files listed in: `CMS_HIRun2010_HIAllPhysics_ZS-v2_RECO_file_index.txt`
-
-
-After running, a file named `HiForestAOD_DATAtest.root` will be created as output.
+This configuration reads input ROOT files listed in: `CMS_HIRun2010_HIAllPhysics_ZS-v2_RECO_file_index.txt`. After running, a file named `HiForestAOD_DATAtest.root` will be created as output.
 
 **Note:** The first time you run the command, it may take a long time (depending on your internet speed), and it might seem like nothing is happening — that is normal. You may need to split the input file list and process each file separately. In this case, always change the output file name to avoid overwriting.
 
 To merge several ROOT output files into one:
 
 ```
-hadd nome_do_arquivo_final arquivo_1 arquivo_2 ....
+hadd <final_output_name> <arquivo_1> <arquivo_2> ....
 ```
 
 This will produce a file named `final_output_name.root` (you can choose any name you like).
