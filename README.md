@@ -1,22 +1,22 @@
 # HiForestProducerTool
 
-Este repositório hospeda um conjunto de exemplos simples que usam CMSSW EDAnalyzers para extrair informações de Triggers e produzir um arquivo ROOT chamado HiForest a partir de dados públicos de íons pesados ​​​​e colisões próton-próton do CMS que foram tomados no ano de 2011. Aqui terá algumas instruções de como rodar esses códigos e reproduzir a análise do espectro de dois múons.
+This repository hosts a collection of simple examples that use CMSSW EDAnalyzers to extract Trigger information and produce a ROOT from the CMS public heavy-ion and proton-proton collision data collected in 2011. Here you will find instructions on how to run these codes and reproduce the dimuon spectrum analysis.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10606247.svg)](https://doi.org/10.5281/zenodo.10606247)
 
-## Instruções 
+## Instructions
 
-### Preparando o Container
+### Preparing the Container
 
-Para realizar essa análise, utilizaremos o [Docker container](http://opendata.cern.ch/docs/cms-guide-docker), para isso faça o download do docker que pode ser visto no link anterior e após o download, copie e cole o seguinte comando no terminal do seu computador:
+To perform this analysis, we will use the [Docker container](http://opendata.cern.ch/docs/cms-guide-docker). Download and install Docker following the instructions at the link. After that, run the following command in your terminal:
 
   ```
   docker run --name hi2011_od -it  gitlab-registry.cern.ch/cms-cloud/cmssw-docker/cmssw_4_4_7-slc5_amd64_gcc434:latest /bin/bash
   ```
 
-Feito o download do container siga os seguintes passos:
+Once the container is running, follow these steps:
 
-- Crie um diretório e obtenha o código através do git:
+- Create a working directory and clone the repository:
 
   ```
   mkdir HiForest
@@ -25,64 +25,71 @@ Feito o download do container siga os seguintes passos:
   cd HiForestProducer
   ```
 
-- Compile os arquivos:
+- Compile the code:
 
   ```
   scram b
   ```
 
-### Rodando o arquivo de configuração 
 
-- Nesse arquivo de configuração está configurado para rodar apenas `100` eventos de colisões PbPb, isso para ver se o código está rodando corretamente. Caso não tenha nenhum output de erro e o arquivo de output ROOT seja produzido corretamente, troque de `100` para `-1` para poder rodar todos os eventos do arquivo de input. 
+### Running the Configuration File
 
-- Execute o arquivo de configuração da seguinte forma:
+The configuration file is set to run only `100` PbPb events to verify that the code runs correctly. If no errors occur and the ROOT output file is generated, you can change `100` to `-1` to run over all events.
+
+Run the configuration with:
 
   ```
   cmsRun hiforestanalyzer_cfg.py
   ```
 
-O arquivo de configuração está configurado para ler os arquivos ROOT de input da lista `CMS_HIRun2011_HIDiMuon_RECO_04Mar2013-v1_root_file_index.txt`
+This configuration reads the input ROOT files listed in: `CMS_HIRun2011_HIDiMuon_RECO_04Mar2013-v1_root_file_index.txt`
 
-Será produzido um arquivo chamado HiForestAOD_DATAtest.root como output.
 
-NOTA: Na primeira vez que você executar o arquivo, demorará muito (dependendo da velocidade da sua conexão) a ponto de parecer que não está fazendo nada. Mas está tudo certo. Talvez seja necessário "separar" o arquivo de input em pequenos arquivos e rodar um por um. Nesse caso, sempre mude o nome do arquivo de saída, caso contrário será sobrescrito no arquivo anterior.
+An output file named `HiForestAOD_DATAtest.root` will be created.
 
-Para juntar todos esses arquivos de saída em um único, execute o seguinte código dentro do container do CMSSW:
+**NOTE:** The first run may take a long time (depending on your connection speed), and it might seem like nothing is happening — that's normal. You might need to split the input file list and process them one at a time. In that case, always change the output file name to avoid overwriting.
+
+To merge all output files into a single one, use:
 
 ```
 hadd nome_do_arquivo_final arquivo_1 arquivo_2 ....
 ```
-No final, deve ser criado um novo arquivo chamado nome_do_arquivo_final (mude para qualquer nome que quiser).
 
-Você também pode modificar o arquivo [src/Analyzer.cc](src/Analyzer.cc) para incluir outros objetos como: (tracks, elétrons, etc) no arquivo de output hiforest. As instruções são dadas no próprio arquivo.
+This will create a file called `final_output_name.root` (you can choose any name). You can also edit [src/Analyzer.cc](src/Analyzer.cc) to include other objects like tracks, electrons, etc., in the HiForest output. Instructions are provided within the file.
 
+### Running the Analysis
 
-### Rodando a análise 
+The file [forest2dimuon/forest2dimuon.C](forest2dimuon/forest2dimuon.C) is a script to analyze the output file. It applies a trigger filter and performs a basic selection and invariant mass histogramming. In the [forest2dimuon](forest2dimuon) folder, you can see modifications to the original file and the resulting plots.
 
-O arquivo [forest2dimuon.C](forest2dimuon/forest2dimuon.C) é um script para analisar o arquivo de saida. Nele é aplicado um trigger "filtro" e é feito uma análise básica de seleção e produção de histogramas de massa invariante. Na pasta [forest2dimuon](forest2dimuon) você pode ver algumas alterações no arquivo original e os plots produzidos.
-
-Para rodar esse arquivo, você precisará do [ROOT](https://root.cern/install/) instalado. Com o ROOT, execute o programa da seguinte forma:
+To run the script, you will need [ROOT](https://root.cern/install/) installed. Once ROOT is installed, run:
 ```
 root -l forest2dimuon_2011PbPb_mass.C
 ```
-E é produzido um plot como esse:
+
+This will produce a plot like:
 
 <p align="center">
-  <img src="forest2dimuon/PbPb/diMuon_mass_2011_PbPb_1.png" alt="Texto Alternativo" width="700">
+  <img src="forest2dimuon/PbPb/diMuon_mass_2011_PbPb_1.png" alt="2011 PbPb DiMuon Mass Plot" width="700">
 </p>
 
-Você pode selecionar outros Triggers para a sua análise, basta acessar o arquivo root pelo `TBrowser b` no ROOT e verificar a Tree de Triggers. 
+You can select other triggers for your analysis by opening the ROOT file with `TBrowser b` in ROOT and browsing the Trigger tree.
 
-### Rodando a análise para os dados de colisões pp:
+### Running the Analysis for Proton-Proton Data
 
-Para rodar os eventos de colisões próton-próton de referência, você só precisará mudar os arquivo de input, o arquivo JSON e trocar `datasetName = cms.string("HIDiMuon")` do arquivo hiforestanalyzer.py para `datasetName = cms.string("AllPhysics2760")` e seguindo todos esses passos novamente e executando o arquivo para o próton-próton:
+To analyze the proton-proton reference collisions, you only need to:
 
+- Change the input files
+- Update the JSON file
+- Replace `datasetName = cms.string("HIDiMuon")` with `datasetName = cms.string("AllPhysics2760")` in the `hiforestanalyzer_cfg.py` file
+
+Then repeat the previous steps and run the corresponding script:
 ```
 root -l forest2dimuon_2011pp_mass.C
 ```
 
-E é produzido um plot como esse:
+This will produce a plot like:
 
 <p align="center">
-  <img src="forest2dimuon/pp/diMuon_mass_2011_pp_1.png" alt="Texto Alternativo" width="700">
+  <img src="forest2dimuon/pp/diMuon_mass_2011_pp_1.png" alt="2011 pp DiMuon Mass Plot" width="700">
 </p>
+
