@@ -60,7 +60,7 @@ You can also edit the file [src/Analyzer.cc](src/Analyzer.cc) to include additio
 
 The file [forest2dimuon.C](forest2dimuon.C) is a ROOT script that analyzes the output file. It applies a trigger filter and performs basic selection and histogramming of the invariant mass. In the folder [forest2dimuon](forest2dimuon), you can find modifications to the original file and the resulting plots.
 
-You can also find some variations of this script in the `hi2010` directory. To run the script, make sure you have [ROOT](https://root.cern/install/) installed. Then execute:
+To run the script, make sure you have [ROOT](https://root.cern/install/) installed. Then execute:
 
 ```
 root -l forest2dimuon_2010PbPb_mass.C
